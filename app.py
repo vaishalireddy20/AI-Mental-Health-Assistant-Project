@@ -36,7 +36,7 @@ app.secret_key = "mentalhealth"
 # -----------------------------
 def init_db():
 
-    conn = sqlite3.connect("database/mental_health.db")
+    conn = sqlite3.connect("mental_health.db")
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -65,7 +65,7 @@ init_db()
 
 def save_mood(username,message,emotion):
 
-    conn=sqlite3.connect("database/mental_health.db")
+    conn=sqlite3.connect("mental_health.db")
     cursor=conn.cursor()
 
     cursor.execute(
@@ -108,7 +108,7 @@ def register():
         user = request.form["user"]
         password = request.form["password"]
 
-        conn = sqlite3.connect("database/mental_health.db")
+        conn = sqlite3.connect("mental_health.db")
         cur = conn.cursor()
 
         cur.execute(
@@ -133,7 +133,7 @@ def register():
 @app.route("/dashboard")
 def dashboard():
 
-    conn = sqlite3.connect("database/mental_health.db")
+    conn = sqlite3.connect("mental_health.db")
     cursor = conn.cursor()
 
     cursor.execute(
@@ -160,7 +160,7 @@ def dashboard():
 @app.route("/mood_analytics")
 def mood_analytics():
 
-    conn = sqlite3.connect("database/mental_health.db")
+    conn = sqlite3.connect("mental_health.db")
     cursor = conn.cursor()
 
     cursor.execute("SELECT emotion, COUNT(*) FROM mood_history GROUP BY emotion")
