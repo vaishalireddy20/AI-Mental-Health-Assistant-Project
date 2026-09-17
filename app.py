@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
 import sqlite3
 import random
 import os
@@ -88,15 +89,74 @@ def detect_mood(text):
         return "Sad"
     else:
         return "Neutral"
+# -----------------------------
+# ADMIN PAGE
+# -----------------------------
+@app.route("/admin")
+def admin():
 
+    if session.get("user") != "admin":
+        return "Access Denied ❌"
 
+    conn = sqlite3.connect("mental_health.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT username FROM users")
+    users = cursor.fetchall()
+
+    cursor.execute("SELECT username, emotion, date FROM mood_history ORDER BY date DESC")
+    moods = cursor.fetchall()
+
+    conn.close()
+
+    return render_template("admin.html", users=users, moods=moods)
+# -----------------------------
+# CREATING ADMIN
+# -----------------------------
+@app.route("/create_admin")
+def create_admin():
+
+    conn = sqlite3.connect("mental_health.db")
+    cursor = conn.cursor()
+
+    hashed = generate_password_hash("admin123")
+
+    cursor.execute(
+        "INSERT INTO users(username,password) VALUES(?,?)",
+        ("admin", hashed)
+    )
+
+    conn.commit()
+    conn.close()
+
+    return "Admin created"
 # -----------------------------
 # LOGIN PAGE
 # -----------------------------
 @app.route("/")
-def login():
+def home():
     return render_template("login.html")
 
+
+@app.route("/login", methods=["POST"])
+def login_user():
+
+    user = request.form.get("user")
+    password = request.form.get("password")
+
+    conn = sqlite3.connect("mental_health.db")
+    cur = conn.cursor()
+
+    cur.execute("SELECT password FROM users WHERE username=?", (user,))
+    data = cur.fetchone()
+
+    conn.close()
+
+    if data and check_password_hash(data[0], password):
+        session["user"] = user
+        return redirect("/dashboard")
+    else:
+        return render_template("login.html", error="Invalid username or password")
 
 # -----------------------------
 # REGISTER
@@ -108,24 +168,24 @@ def register():
         user = request.form["user"]
         password = request.form["password"]
 
+        hashed_password = generate_password_hash(password)
+
         conn = sqlite3.connect("mental_health.db")
         cur = conn.cursor()
 
         cur.execute(
             "INSERT INTO users(username,password) VALUES(?,?)",
-            (user, password)
+            (user, hashed_password)
         )
 
         conn.commit()
         conn.close()
 
-        # store user in session
         session["user"] = user
 
         return redirect("/chat")
 
     return render_template("register.html")
-
 
 # -----------------------------
 # DASHBOARD (MOOD ANALYTICS)
@@ -210,9 +270,21 @@ def response():
         "reply": reply,
         "emotion": emotion
     })
+
+@app.route("/view_users")
+def view_users():
+
+    conn = sqlite3.connect("mental_health.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users")
+    data = cursor.fetchall()
+
+    conn.close()
+
+    return str(data)
 # -----------------------------
 # RUN APP
 # -----------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True, port=5001)

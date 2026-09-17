@@ -9,12 +9,17 @@
 
 <h2>Mental Health Assistant</h2>
 
-<form action="/dashboard">
+<form method="POST" action="/login">
 
-<input placeholder="Username">
-<input type="password" placeholder="Password">
+{% if error %}
+<p style="color:red;">{{ error }}</p>
+{% endif %}
 
-<button>Login</button>
+<input type="text" name="user" placeholder="Username" required>
+
+<input type="password" name="password" placeholder="Password" required>
+
+<button type="submit">Login</button>
 
 <a href="/register">Register</a>
 

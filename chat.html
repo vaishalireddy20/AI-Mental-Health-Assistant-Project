@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Mental Health Therapist Chatbot</title>
+
+<style>
+
+body{
+margin:0;
+padding:0;
+font-family:Arial;
+
+background: linear-gradient(-45deg,#ff9a9e,#fad0c4,#a18cd1,#84fab0);
+background-size:400% 400%;
+animation: gradientBG 12s ease infinite;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+@keyframes gradientBG{
+0%{background-position:0% 50%;}
+50%{background-position:100% 50%;}
+100%{background-position:0% 50%;}
+}
+
+.container{
+
+width:420px;
+padding:25px;
+border-radius:15px;
+
+background: rgba(255,255,255,0.2);
+backdrop-filter: blur(12px);
+
+box-shadow:0 8px 32px rgba(0,0,0,0.25);
+
+color:#fff;
+
+}
+
+h2{
+text-align:center;
+margin-bottom:15px;
+}
+
+#chatbox{
+
+height:300px;
+overflow-y:auto;
+
+background: rgba(255,255,255,0.15);
+padding:10px;
+border-radius:10px;
+
+margin-bottom:10px;
+
+}
+
+input{
+
+width:65%;
+padding:10px;
+border-radius:8px;
+border:none;
+outline:none;
+
+}
+
+button{
+
+padding:10px 14px;
+border:none;
+border-radius:8px;
+background:#ff7eb3;
+color:white;
+cursor:pointer;
+font-weight:bold;
+
+}
+
+button:hover{
+background:#ff4f91;
+}
+
+.actions{
+
+margin-top:12px;
+display:flex;
+justify-content:space-between;
+
+}
+
+.helpline{
+
+margin-top:15px;
+background: rgba(255,0,0,0.2);
+padding:10px;
+border-radius:8px;
+font-size:14px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>🧠 Mental Health Therapist Chatbot</h2>
+<div id="chatbox" style="height:250px;overflow:auto;border:1px solid gray;margin-bottom:10px;padding:10px;"></div>
+
+<div id="chatbox"></div>
+
+<input id="message" placeholder="Type how you feel...">
+
+<button onclick="send()">Send</button>
+
+<div class="actions">
+
+<button onclick="voice()">🎤 Voice</button>
+
+<button onclick="meditation()">🧘 Meditation</button>
+
+</div>
+
+<div class="helpline">
+
+<b>Emergency Support</b><br>
+☎ National Mental Health Helpline: 9152987821
+
+</div>
+
+</div>
+
+<script>
+
+function send(){
+
+let message=document.getElementById("message").value;
+
+let chat=document.getElementById("chatbox");
+
+if(message=="") return;
+
+chat.innerHTML+="<p><b>You:</b> "+message+"</p>";
+
+fetch("/chat",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({message:message})
+})
+
+.then(res=>res.json())
+.then(data=>{
+
+chat.innerHTML+="<p><b>Bot:</b> "+data.reply+"</p>";
+
+chat.scrollTop=chat.scrollHeight;
+
+});
+
+document.getElementById("message").value="";
+
+}
+
+function voice(){
+
+alert("🎤 Voice input feature coming soon!");
+
+}
+
+function meditation(){
+
+let chat=document.getElementById("chatbox");
+
+chat.innerHTML+="<p><b>Bot:</b> Let's try a short breathing meditation. Inhale slowly... Exhale slowly... Repeat for 2 minutes.</p>";
+
+}
+
+</script>
+<script>
+
+function send(){
+
+let message = document.getElementById("message").value;
+
+if(message=="") return;
+
+fetch("/chat",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({message:message})
+})
+
+.then(response=>response.json())
+.then(data=>{
+
+let chatbox=document.getElementById("chatbox");
+
+chatbox.innerHTML += "<p><b>You:</b> "+message+"</p>";
+chatbox.innerHTML += "<p><b>Bot:</b> "+data.reply+"</p>";
+
+document.getElementById("message").value="";
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
+<div class="emergency">
+
+<h3>Emergency Support</h3>
+
+☎ National Mental Health Helpline  
+915298721
+
+</div>
